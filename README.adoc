@@ -1,0 +1,75 @@
+= Demo for sending Confluent Platform logs to ELK
+
+This playground for experimenting with migrating Kafka from Zookeeper to KRaft.
+It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier observability.
+
+== Preconditions
+
+Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.
+
+== Running Confluent Platform
+
+Start the containers by running:
+```bash
+docker compose up -d
+```
+
+Start the containers by running (if you want to run ELK):
+```bash
+docker compose --profile elastic up -d
+```
+
+Stopping the containers without removing any volumes:
+```bash
+docker compose --profile elastic down
+```
+
+Stopping the containers with removal of all created volumes (be careful!):
+```bash
+docker compose --profile elastic down -v
+```
+
+Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
+```bash
+docker volumes prune
+```
+
+== Usage
+
+=== ELK with Kibana (optional)
+
+If you have used the profile `elastic`, you can access `kibana` with your web browser here:
+
+* URL: `http://localhost:5601`
+* Username: `elastic`
+* Password: `elastic`
+
+Go to `Analytics->Discover`.
+
+If using the `filebeat` profile, create a new data view. Use any name (e.g. `kafka`) and filter on `filebeat-*`.
+
+Choose a time interval and export data as CSV file by clicking "Share".
+
+== Parsing the CSV files with Python
+
+Install Python 3 and set up the Python environment:
+
+```bash
+cd extract-log-files
+# Create a virtual environment in sub folder .venv
+python3 -m venv .venv
+# Activate the virtual environment
+source .venv/bin/activate
+# Install packages
+pip3 install pandas
+```
+
+You might need to adapt the script slightly if not working with a docker-based infrastructure as in this demo.
+Update the column names in the file. Then run it like this from the virtual environment in the main filder:
+
+```bash
+python3 extract-log-files/extract-log-files.py example/example-data.csv
+```
+
+This should create one log file per node.
+
