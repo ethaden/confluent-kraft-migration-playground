@@ -9,24 +9,24 @@ Adapt the testbench to your version of Confluent Platform as required by modifyi
 
 == Running Confluent Platform
 
-Start the containers by running:
+Start the containers by running (choose either profile `cp` for Confluent Platform or `ak` for open-source Apache Kafka):
 ```bash
-docker compose up -d
+docker compose --profile cp up -d
 ```
 
 Start the containers by running (if you want to run ELK):
 ```bash
-docker compose --profile elastic up -d
+docker compose --profile cp --profile elastic up -d
 ```
 
 Stopping the containers without removing any volumes:
 ```bash
-docker compose --profile elastic down
+docker compose --profile cp --profile elastic down
 ```
 
 Stopping the containers with removal of all created volumes (be careful!):
 ```bash
-docker compose --profile elastic down -v
+docker compose --profile cp--profile elastic down -v
 ```
 
 Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
@@ -50,26 +50,31 @@ If using the `filebeat` profile, create a new data view. Use any name (e.g. `kaf
 
 Choose a time interval and export data as CSV file by clicking "Share".
 
-== Parsing the CSV files with Python
+=== Produce some data
 
-Install Python 3 and set up the Python environment:
+In the following examples, use `ak1` instead of `broker1` if running with profile `ak`.
 
-```bash
-cd extract-log-files
-# Create a virtual environment in sub folder .venv
-python3 -m venv .venv
-# Activate the virtual environment
-source .venv/bin/activate
-# Install packages
-pip3 install pandas
+Create a topic:
+
+```
+docker compose exec broker1 kafka-topics --bootstrap-server localhost:29092 --create --topic test
 ```
 
-You might need to adapt the script slightly if not working with a docker-based infrastructure as in this demo.
-Update the column names in the file. Then run it like this from the virtual environment in the main filder:
+List topics:
 
-```bash
-python3 extract-log-files/extract-log-files.py example/example-data.csv
+```
+docker compose exec broker1 kafka-topics --bootstrap-server localhost:29092 --list
 ```
 
-This should create one log file per node.
+Produce some test data (exit with Ctrl-D):
+
+```
+docker compose exec broker1 kafka-console-producer --bootstrap-server localhost:29092 --topic test
+```
+
+Read the data again (exit with Ctrl-C):
+
+```
+docker compose exec broker1 kafka-console-consumer --bootstrap-server localhost:29092 --topic test --from-beginning
+```
 
