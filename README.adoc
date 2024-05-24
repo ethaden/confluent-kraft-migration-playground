@@ -7,7 +7,22 @@ It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier obse
 
 Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.
 
-== Running Confluent Platform
+== Running Confluent Platform or Apache Kafka (using the Bitnami image)
+
+If you want to use Confluent Platform in this demo:
+```bash
+export COMPOSE_PROFILES="cp"
+```
+
+If you want to use the Apache Kafka instead:
+```bash
+export COMPOSE_PROFILES="ak"
+```
+
+Optionally, if you want to use elastic search for log aggregation, add the "elastic" profile, e.g.
+```bash
+export COMPOSE_PROFILES="ak,elastic"
+```
 
 Start the containers by running (choose either profile `cp` for Confluent Platform or `ak` for open-source Apache Kafka):
 ```bash
@@ -16,17 +31,17 @@ docker compose --profile cp up -d
 
 Start the containers by running (if you want to run ELK):
 ```bash
-docker compose --profile cp --profile elastic up -d
+docker compose  up -d
 ```
 
 Stopping the containers without removing any volumes:
 ```bash
-docker compose --profile cp --profile elastic down
+docker compose  down
 ```
 
 Stopping the containers with removal of all created volumes (be careful!):
 ```bash
-docker compose --profile cp--profile elastic down -v
+docker compose  down -v
 ```
 
 Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
@@ -50,7 +65,7 @@ If using the `filebeat` profile, create a new data view. Use any name (e.g. `kaf
 
 Choose a time interval and export data as CSV file by clicking "Share".
 
-=== Produce some data
+=== Produce some data (CP)
 
 In the following examples, use `ak1` instead of `broker1` if running with profile `ak`.
 
@@ -78,3 +93,31 @@ Read the data again (exit with Ctrl-C):
 docker compose exec broker1 kafka-console-consumer --bootstrap-server localhost:29092 --topic test --from-beginning
 ```
 
+
+=== Produce some data (AK)
+
+In the following examples, use `ak1` instead of `broker1` if running with profile `ak`.
+
+Create a topic:
+
+```
+docker compose exec ak1 kafka-topics.sh --bootstrap-server localhost:29092 --create --topic test
+```
+
+List topics:
+
+```
+docker compose exec ak1 kafka-topics.sh --bootstrap-server localhost:29092 --list
+```
+
+Produce some test data (exit with Ctrl-D):
+
+```
+docker compose exec ak1 kafka-console-producer --bootstrap-server localhost:29092 --topic test
+```
+
+Read the data again (exit with Ctrl-C):
+
+```
+docker compose exec ak1 kafka-console-consumer --bootstrap-server localhost:29092 --topic test --from-beginning
+```

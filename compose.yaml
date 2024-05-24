@@ -65,10 +65,10 @@ services:
       ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2888:3888;zookeeper3:2888:3888
  
   broker1:
-    image: confluentinc/cp-server:${CP_VERSION}
+    image: ${KAFKA_BROKER_IMAGE}
     hostname: broker1
-    profiles: ["cp"]
     container_name: broker1
+    profiles: ["cp"]
     depends_on:
       - zookeeper1
       - zookeeper2
@@ -85,10 +85,10 @@ services:
       KAFKA_KAFKA_REST_ENABLE: "true"
 
   broker2:
-    image: confluentinc/cp-server:${CP_VERSION}
+    image: ${KAFKA_BROKER_IMAGE}
     hostname: broker2
-    profiles: ["cp"]
     container_name: broker2
+    profiles: ["cp"]
     depends_on:
       - zookeeper1
       - zookeeper2
@@ -104,6 +104,48 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_KAFKA_REST_ENABLE: "true"
   
+  ak1:
+    image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
+    hostname: broker1
+    container_name: broker1
+    profiles: ["ak"]
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_CFG_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # In Zookeeper mode
+      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_BROKER_ID: 1
+      # In KRaft mode
+      #KAFKA_CFG_NODE_ID: 1
+
+  ak2:
+    image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
+    hostname: broker2
+    container_name: broker2
+    profiles: ["ak"]
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ports:
+      - "29093:29093"
+    environment:
+      KAFKA_CFG_LISTENERS: PLAINTEXT://broker2:9092,PLAINTEXT_HOST://0.0.0.0:29093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9092,PLAINTEXT_HOST://localhost:29093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # In Zookeeper mode
+      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_BROKER_ID: 2
+      # In KRaft mode
+      #KAFKA_CFG_NODE_ID: 2
+
   schema-registry:
     image: confluentinc/cp-schema-registry:${CP_VERSION}
     hostname: schema-registry
@@ -122,48 +164,6 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:9092,broker2:9092'
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-  
-  # For Apache Kafka 
-  ak1:
-    image: confluentinc/cp-server:${CP_VERSION}
-    hostname: broker1
-    profiles: ["ak"]
-    container_name: broker1
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_KAFKA_REST_ENABLE: "true"
-
-  ak2:
-    image: confluentinc/cp-server:${CP_VERSION}
-    hostname: broker2
-    profiles: ["ak"]
-    container_name: broker2
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29093:29093"
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9092,PLAINTEXT_HOST://localhost:29093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_KAFKA_REST_ENABLE: "true"
-
 
   setup:
    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
