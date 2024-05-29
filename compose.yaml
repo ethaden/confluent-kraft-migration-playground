@@ -103,7 +103,26 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_KAFKA_REST_ENABLE: "true"
-  
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:${CP_VERSION}
+    hostname: schema-registry
+    profiles: ["cp"]
+    container_name: schema-registry
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+      - broker1
+      - broker2
+    ports:
+      - '8081:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:9092,broker2:9092'
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+
   ak1:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: broker1
@@ -120,6 +139,7 @@ services:
       KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       # In Zookeeper mode
+      KAFKA_CFG_CLUSTER_ID: 68p6Sf9fRkSVXINpnZ6MqQ
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
       KAFKA_CFG_BROKER_ID: 1
       # In KRaft mode
@@ -146,24 +166,51 @@ services:
       # In KRaft mode
       #KAFKA_CFG_NODE_ID: 2
 
-  schema-registry:
-    image: confluentinc/cp-schema-registry:${CP_VERSION}
-    hostname: schema-registry
-    profiles: ["cp"]
-    container_name: schema-registry
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - broker1
-      - broker2
-    ports:
-      - '8081:8081'
+  # KRaft Controllers
+  akcontroller1:
+    image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
+    hostname: controller1
+    container_name: controller1
+    profiles: ["ak"]
     environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:9092,broker2:9092'
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_PROCESS_ROLES: controller
+      KAFKA_CFG_LISTENERS: CONTROLLER://controller1:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@controller1:9093,1@controller2:9093,2@controller3:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_KRAFT_CLUSTER_ID: 5cWXxpj8SjiK6DapW-uhow
+      KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
+
+  akcontroller2:
+    image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
+    hostname: controller2
+    container_name: controller2
+    profiles: ["ak"]
+    environment:
+      KAFKA_CFG_PROCESS_ROLES: controller
+      KAFKA_CFG_LISTENERS: CONTROLLER://controller2:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@controller1:9093,1@controller2:9093,2@controller3:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_KRAFT_CLUSTER_ID: 5cWXxpj8SjiK6DapW-uhow
+      KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
+
+  akcontroller3:
+    image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
+    hostname: controller3
+    container_name: controller3
+    profiles: ["ak"]
+    environment:
+      KAFKA_CFG_PROCESS_ROLES: controller
+      KAFKA_CFG_LISTENERS: CONTROLLER://controller3:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT
+      KAFKA_CFG_NODE_ID: 2
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@controller1:9093,1@controller2:9093,2@controller3:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_KRAFT_CLUSTER_ID: 5cWXxpj8SjiK6DapW-uhow
+      KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
 
   setup:
    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
