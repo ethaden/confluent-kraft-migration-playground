@@ -1,10 +1,11 @@
 ---
 services:
-  # For Confluent Platform
+  # For simplicity, we use Confluent Platform Zookeeper here. The procedure is exactly the same for another zookeeper image
   zookeeper1:
     image: confluentinc/cp-zookeeper:${CP_VERSION}
     hostname: zookeeper1
     container_name: zookeeper1
+    profiles: [zookeeper]
     restart: always
     ports:
       - "21811:21811"
@@ -26,6 +27,7 @@ services:
     image: confluentinc/cp-zookeeper:${CP_VERSION}
     hostname: zookeeper2
     container_name: zookeeper2
+    profiles: [zookeeper]
     restart: always
     ports:
       - "21812:21812"
@@ -47,6 +49,7 @@ services:
     image: confluentinc/cp-zookeeper:${CP_VERSION}
     hostname: zookeeper3
     container_name: zookeeper3
+    profiles: [zookeeper]
     restart: always
     ports:
       - "21813:21813"
@@ -65,69 +68,9 @@ services:
       ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2888:3888;zookeeper3:2888:3888
  
   broker1:
-    image: ${KAFKA_BROKER_IMAGE}
-    hostname: broker1
-    container_name: broker1
-    profiles: ["cp"]
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_KAFKA_REST_ENABLE: "true"
-
-  broker2:
-    image: ${KAFKA_BROKER_IMAGE}
-    hostname: broker2
-    container_name: broker2
-    profiles: ["cp"]
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29093:29093"
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9092,PLAINTEXT_HOST://localhost:29093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_KAFKA_REST_ENABLE: "true"
-
-  schema-registry:
-    image: confluentinc/cp-schema-registry:${CP_VERSION}
-    hostname: schema-registry
-    profiles: ["cp"]
-    container_name: schema-registry
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - broker1
-      - broker2
-    ports:
-      - '8081:8081'
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:9092,broker2:9092'
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-
-  ak1:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: broker1
     container_name: broker1
-    profiles: ["ak"]
     depends_on:
       - zookeeper1
       - zookeeper2
@@ -145,11 +88,10 @@ services:
       # In KRaft mode
       #KAFKA_CFG_NODE_ID: 1
 
-  ak2:
+  broker2:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: broker2
     container_name: broker2
-    profiles: ["ak"]
     depends_on:
       - zookeeper1
       - zookeeper2
@@ -167,7 +109,7 @@ services:
       #KAFKA_CFG_NODE_ID: 2
 
   # KRaft Controllers
-  akcontroller1:
+  controller1:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: controller1
     container_name: controller1

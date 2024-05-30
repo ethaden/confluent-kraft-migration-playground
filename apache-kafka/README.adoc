@@ -1,0 +1,122 @@
+= Demo for sending Confluent Platform logs to ELK
+
+This playground for experimenting with migrating Kafka from Zookeeper to KRaft.
+It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier observability.
+
+== Preconditions
+
+Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.
+
+== Running Apache Kafka (using the Bitnami image)
+
+Optionally, if you want to use elastic search for log aggregation, add the "elastic" profile in addition to the profiles used in the following steps, for example:
+
+```bash
+export COMPOSE_PROFILES="zookeeper,elastic"
+```
+in the first phase or
+```bash
+export COMPOSE_PROFILES="kraft,elastic"
+```
+when KRaft mode is being enabled
+
+=== Start a new cluster in Zookeeper mode
+
+First, activate the docker profile zookeeper for the following commands, by setting the appropriate environment variable:
+
+```bash
+export COMPOSE_PROFILES="zookeeper,elastic"
+```
+
+Start the containers by running:
+```bash
+docker compose up -d
+```
+
+Stopping the containers without removing any volumes:
+```bash
+docker compose  down
+```
+
+Stopping the containers with removal of all created volumes (be careful!):
+```bash
+docker compose  down -v
+```
+
+Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
+```bash
+docker volumes prune
+```
+
+== Usage
+
+=== ELK with Kibana (optional)
+
+If you have used the profile `elastic`, you can access `kibana` with your web browser here:
+
+* URL: `http://localhost:5601`
+* Username: `elastic`
+* Password: `elastic`
+
+Go to `Analytics->Discover`.
+
+If using the `filebeat` profile, create a new data view. Use any name (e.g. `kafka`) and filter on `filebeat-*`.
+
+Choose a time interval and export data as CSV file by clicking "Share".
+
+=== Produce some data (CP)
+
+In the following examples, use `ak1` instead of `broker1` if running with profile `ak`.
+
+Create a topic:
+
+```
+docker compose exec broker1 kafka-topics --bootstrap-server localhost:29092 --create --topic test
+```
+
+List topics:
+
+```
+docker compose exec broker1 kafka-topics --bootstrap-server localhost:29092 --list
+```
+
+Produce some test data (exit with Ctrl-D):
+
+```
+docker compose exec broker1 kafka-console-producer --bootstrap-server localhost:29092 --topic test
+```
+
+Read the data again (exit with Ctrl-C):
+
+```
+docker compose exec broker1 kafka-console-consumer --bootstrap-server localhost:29092 --topic test --from-beginning
+```
+
+
+=== Produce some data (AK)
+
+In the following examples, use `ak1` instead of `broker1` if running with profile `ak`.
+
+Create a topic:
+
+```
+docker compose exec ak1 kafka-topics.sh --bootstrap-server localhost:29092 --create --topic test
+```
+
+List topics:
+
+```
+docker compose exec ak1 kafka-topics.sh --bootstrap-server localhost:29092 --list
+```
+
+Produce some test data (exit with Ctrl-D):
+
+```
+docker compose exec ak1 kafka-console-producer --bootstrap-server localhost:29092 --topic test
+```
+
+Read the data again (exit with Ctrl-C):
+
+```
+docker compose exec ak1 kafka-console-consumer --bootstrap-server localhost:29092 --topic test --from-beginning
+```
