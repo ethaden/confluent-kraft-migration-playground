@@ -94,12 +94,24 @@ docker compose logs controller3
 
 The controllers will initialize and wait for connections from brokers before they start the actual migration.
 
-Update the brokers configuration.
+Update the brokers configuration in the `compose.yaml` Docker configuration file.
 Make sure, `CONTROLLER:PLAINTEXT` is configured in the listener security map (`KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP`), for every broker. In this demo this has been pre-configured already.
+
+Then, uncomment all environment variables required by the Zookeeper-to-KRaft migration (we call this Phase 2 in this demo).
+Restart the brokers after that:
+
+```bash
+docker compose up -d
+```
 
 
 
 ## Useful commands
+Check which brokers are known to Zookeeper:
+```bash
+docker compose exec zookeeper1 zookeeper-shell localhost:21811 ls /brokers/ids
+```
+
 Stopping the containers without removing any volumes:
 ```bash
 docker compose  down
