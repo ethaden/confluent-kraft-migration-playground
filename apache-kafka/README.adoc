@@ -3,6 +3,8 @@
 This playground for experimenting with migrating Kafka from Zookeeper to KRaft.
 It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier observability.
 
+This version of the playground is for the open-source version of Apache Kafka. The guide for migrating Apache Kafka installations from Zookeeper to KRaft can be found link:https://kafka.apache.org/documentation/)#kraft_zk_migration[here].
+
 == Preconditions
 
 Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.
@@ -25,7 +27,7 @@ when KRaft mode is being enabled
 First, activate the docker profile zookeeper for the following commands, by setting the appropriate environment variable:
 
 ```bash
-export COMPOSE_PROFILES="zookeeper,elastic"
+export COMPOSE_PROFILES="zookeeper"
 ```
 
 Start the containers by running:
