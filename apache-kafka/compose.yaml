@@ -152,12 +152,12 @@ services:
       KAFKA_CFG_NODE_ID: 101
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 101@controller1:9093,102@controller2:9093,103@controller3:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_KRAFT_CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
-      # Phase 2: Migration
+      # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
 
   controller2:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
@@ -176,13 +176,12 @@ services:
       KAFKA_CFG_NODE_ID: 102
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 101@controller1:9093,102@controller2:9093,103@controller3:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_KRAFT_CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
-      # Phase 2: Migration
+      # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      # Phase 2 (Migration) and Phase 3 (KRaft-only Mode)
-      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
 
   controller3:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
@@ -201,13 +200,12 @@ services:
       KAFKA_CFG_NODE_ID: 103
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 101@controller1:9093,102@controller2:9093,103@controller3:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_KRAFT_CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
-      # Phase 2: Migration
+      # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      # Phase 2 (Migration) and Phase 3 (KRaft-only Mode)
-      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
 
   setup:
    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
