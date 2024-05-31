@@ -25,7 +25,7 @@ when KRaft mode is being enabled
 First, activate the docker profile zookeeper for the following commands, by setting the appropriate environment variable:
 
 ```bash
-export COMPOSE_PROFILES="zookeeper"
+export COMPOSE_PROFILES="zookeeper,elastic"
 ```
 
 Start the containers by running:
@@ -104,7 +104,35 @@ Restart the brokers after that:
 docker compose up -d
 ```
 
+The migration should now start. Check the KRaft controller logs for details. Wait until you see a message "Completed migration of metadata from Zookeeper to KRaft". Then enter Phase 3 of this demo.
 
+### Phase 3: KRaft-only mode
+
+Reconfigure both brokers and remove all lines only relevant during Phase 1 and Phase 2 (please read the `compose.yaml?  carefully as some configuration options need to remain enabled in KRaft-only mode).
+
+Restart the brokers:
+```bash
+docker compose up -d
+```
+
+Check theirs logs:
+```bash
+docker compose logs broker1
+docker compose logs broker2
+```
+
+The Zookeeper nodes should not be required anymore. Shut them down by running:
+```bash
+docker compose down -v zookeeper1 zookeeper2 zookeeper3
+```
+
+### Cleaning up
+
+Stopping all the  containers with removal of all created volumes (be careful!):
+```bash
+COMPOSE_PROFILES="zookeeper,migration,kraft,elastic" docker compose  down -v
+unset COMPOSE_PROFILES
+```
 
 ## Useful commands
 Check which brokers are known to Zookeeper:
@@ -112,14 +140,14 @@ Check which brokers are known to Zookeeper:
 docker compose exec zookeeper1 zookeeper-shell localhost:21811 ls /brokers/ids
 ```
 
-Stopping the containers without removing any volumes:
+Stopping all the containers without removing any volumes:
 ```bash
-docker compose  down
+COMPOSE_PROFILES="zookeeper,migration,kraft,elastic" docker compose  down
 ```
 
-Stopping the containers with removal of all created volumes (be careful!):
+Stopping all the  containers with removal of all created volumes (be careful!):
 ```bash
-docker compose  down -v
+COMPOSE_PROFILES="zookeeper,migration,kraft,elastic" docker compose  down -v
 ```
 
 Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
@@ -137,8 +165,8 @@ If you have used the profile `elastic`, you can access `kibana` with your web br
 * Username: `elastic`
 * Password: `elastic`
 
-Go to `Analytics->Discover`.
+The initial setup of ELK takes quite some time, please be patient.
 
-If using the `filebeat` profile, create a new data view. Use any name (e.g. `kafka`) and filter on `filebeat-*`.
+Go to `Analytics->Discover`. In "logs-*" (preselected) you should see the log messages produced by all docker containers currently running in the system. The actual log messages are in the column `message`, the name of the container is in `container.name`.
 
-Choose a time interval and export data as CSV file by clicking "Share".
+If you want to see just data from a specific container, you can filter by `container.name`, e.g. `container.name: broker1`.

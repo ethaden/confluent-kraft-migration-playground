@@ -77,10 +77,10 @@ services:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: broker1
     container_name: broker1
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
+    profiles: 
+      - zookeeper
+      - migration
+      - kraft
     ports:
       - "29092:29092"
     volumes:
@@ -90,27 +90,27 @@ services:
       KAFKA_CFG_ADVERTISED_LISTENERS: BROKER://broker1:9092,BROKER_HOST://localhost:29092
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:PLAINTEXT,BROKER_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
-      # Phase 1 (Zookeeper mode) and Phase 2 (Migration)
+      # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      # Required for Zookeeper mode
       KAFKA_CFG_BROKER_ID: 1
-      # Required for KRaft mode
-      KAFKA_CFG_NODE_ID: 1
-      # Phase 2: Migration
+      # Use these lines on in Phase 2 (Migration). DO NOT USE these lines in Phase 1 or Phase 3!
       #KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
-      #KAFKA_KRAFT_CLUSTER_ID: ${KRAFT_CLUSTER_ID}
-      #KAFKA_CFG_PROCESS_ROLES: broker
+      # Use these lines on in Phase 2 (Migration) and Phase 3: Enable for migration and keep lines in final configuration
       #KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 101@controller1:9093,102@controller2:9093,103@controller3:9093
       #KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Phase 3 (Migration finished): Enable these lines in the final configuration
+      # Comment "KAFKA_CFG_BROKER_ID" (above), uncomment "KAFKA_CFG_NODE_ID" (below)
+      #KAFKA_CFG_NODE_ID: 1
+      #KAFKA_CFG_PROCESS_ROLES: broker
 
   broker2:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
     hostname: broker2
     container_name: broker2
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
+    profiles: 
+      - zookeeper
+      - migration
+      - kraft
     ports:
       - "29093:29093"
     volumes:
@@ -120,18 +120,18 @@ services:
       KAFKA_CFG_ADVERTISED_LISTENERS: BROKER://broker2:9092,BROKER_HOST://localhost:29093
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:PLAINTEXT,BROKER_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
-      # Phase 1 (Zookeeper mode) and Phase 2 (Migration)
+      # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
-      # Required for Zookeeper mode
       KAFKA_CFG_BROKER_ID: 2
-      # Required for KRaft mode
-      KAFKA_CFG_NODE_ID: 2
-      # Phase 2: Migration
+      # Use these lines on in Phase 2 (Migration). DO NOT USE these lines in Phase 1 or Phase 3!
       #KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
-      #KAFKA_KRAFT_CLUSTER_ID: ${KRAFT_CLUSTER_ID}
-      #KAFKA_CFG_PROCESS_ROLES: broker
+      # Use these lines on in Phase 2 (Migration) and Phase 3: Enable for migration and keep lines in final configuration
       #KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 101@controller1:9093,102@controller2:9093,103@controller3:9093
       #KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Phase 3 (Migration finished): Enable these lines in the final configuration
+      # Comment "KAFKA_CFG_BROKER_ID" (above), uncomment "KAFKA_CFG_NODE_ID" (below)
+      #KAFKA_CFG_NODE_ID: 2
+      #KAFKA_CFG_PROCESS_ROLES: broker
 
 
   # KRaft Controllers
@@ -140,8 +140,8 @@ services:
     hostname: controller1
     container_name: controller1
     profiles: 
-      - "migration"
-      - "kraft"
+      - migration
+      - kraft
     volumes:
       - data-controller1:/bitnami/kafka
     environment:
@@ -164,8 +164,8 @@ services:
     hostname: controller2
     container_name: controller2
     profiles: 
-      - "migration"
-      - "kraft"
+      - migration
+      - kraft
     volumes:
       - data-controller2:/bitnami/kafka
     environment:
@@ -181,6 +181,7 @@ services:
       # Phase 2: Migration
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      # Phase 2 (Migration) and Phase 3 (KRaft-only Mode)
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
 
   controller3:
@@ -188,8 +189,8 @@ services:
     hostname: controller3
     container_name: controller3
     profiles: 
-      - "migration"
-      - "kraft"
+      - migration
+      - kraft
     volumes:
       - data-controller3:/bitnami/kafka
     environment:
@@ -205,6 +206,7 @@ services:
       # Phase 2: Migration
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      # Phase 2 (Migration) and Phase 3 (KRaft-only Mode)
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
 
   setup:
