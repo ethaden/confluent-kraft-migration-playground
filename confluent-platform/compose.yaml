@@ -97,7 +97,9 @@ services:
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
       CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_METRICS_ENABLE: true
+      CONFLUENT_LINK_COORDINATOR_ENABLE: true
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_ENABLE: true
       # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
       KAFKA_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
       KAFKA_BROKER_ID: 1
@@ -110,6 +112,7 @@ services:
       # Comment "KAFKA_BROKER_ID" (above), uncomment "KAFKA_NODE_ID" (below)
       #KAFKA_NODE_ID: 1
       #KAFKA_PROCESS_ROLES: broker
+      #CLUSTER_ID: ${KRAFT_CLUSTER_ID}
 
   broker2:
     image: confluentinc/cp-server:${CP_VERSION}
@@ -135,7 +138,8 @@ services:
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
       CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_METRICS_ENABLE: true
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_ENABLE: true
       # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
       KAFKA_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
       KAFKA_BROKER_ID: 2
@@ -148,6 +152,7 @@ services:
       # Comment "KAFKA_BROKER_ID" (above), uncomment "KAFKA_NODE_ID" (below)
       #KAFKA_NODE_ID: 2
       #KAFKA_PROCESS_ROLES: broker
+      #CLUSTER_ID: ${KRAFT_CLUSTER_ID}
 
 
   # KRaft Controllers
@@ -171,6 +176,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_KRAFT_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_ENABLE: true
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
@@ -195,6 +201,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_KRAFT_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_ENABLE: true
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
@@ -219,6 +226,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       CLUSTER_ID: ${KRAFT_CLUSTER_ID}
       KAFKA_KRAFT_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_ENABLE: true
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
       KAFKA_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
