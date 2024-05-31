@@ -91,7 +91,7 @@ services:
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:PLAINTEXT,BROKER_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
       # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
       KAFKA_CFG_BROKER_ID: 1
       # Use these lines on in Phase 2 (Migration). DO NOT USE these lines in Phase 1 or Phase 3!
       #KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
@@ -121,7 +121,7 @@ services:
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:PLAINTEXT,BROKER_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: BROKER
       # Use these lines only during Phase 1 (Zookeeper mode) and Phase 2 (Migration): DO NOT USE these lines in Phase 3!
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
       KAFKA_CFG_BROKER_ID: 2
       # Use these lines on in Phase 2 (Migration). DO NOT USE these lines in Phase 1 or Phase 3!
       #KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
@@ -157,7 +157,7 @@ services:
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
 
   controller2:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
@@ -181,7 +181,7 @@ services:
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
 
   controller3:
     image: bitnami/kafka:${BITNAMI_KAFKA_VERSION}
@@ -205,7 +205,7 @@ services:
       KAFKA_CFG_KRAFT_REPLICATION_FACTOR: 3
       # Phase 2 (Migration): Comment the next lines in Phase 3
       KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE: true
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper1:21811,zookeeper2:21812,zookeeper3:21813'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper1:21811,zookeeper2:21812,zookeeper3:21813
 
   setup:
    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
