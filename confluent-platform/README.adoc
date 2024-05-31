@@ -45,25 +45,25 @@ docker compose ps
 Create a topic:
 
 ```
-docker compose exec broker1 kafka-topics.sh --bootstrap-server broker1:9092 --create --topic test
+docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic test
 ```
 
 List topics:
 
 ```
-docker compose exec broker1 kafka-topics.sh --bootstrap-server broker1:9092 --list
+docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --list
 ```
 
 Produce some test data (exit with Ctrl-D):
 
 ```
-docker compose exec broker1 kafka-console-producer.sh --bootstrap-server broker1:9092 --topic test
+docker compose exec broker1 kafka-console-producer --bootstrap-server broker1:9092 --topic test
 ```
 
 Read the data again (exit with Ctrl-C):
 
 ```
-docker compose exec broker1 kafka-console-consumer.sh --bootstrap-server broker1:9092 --topic test --from-beginning
+docker compose exec broker1 kafka-console-consumer --bootstrap-server broker1:9092 --topic test --from-beginning
 ```
 
 === Phase 2: Start the migration
