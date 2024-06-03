@@ -1,4 +1,4 @@
-= Demo for sending Confluent Platform logs to ELK
+= Demo for Migrating Confluent Platform from Zookeeper to KRaft
 
 This playground for experimenting with migrating Kafka from Zookeeper to KRaft.
 It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier observability.
