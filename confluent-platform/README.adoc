@@ -166,6 +166,11 @@ Cleaning up (CAREFUL: THIS WILL DELETE ALL UNUSED VOLUMES):
 docker volumes prune
 ```
 
+Reset the `compose.yaml` to the initial state currenty commited to the repository:
+```bash
+git checkout compose.yaml
+```
+
 == Usage
 
 === ELK with Kibana (optional)
