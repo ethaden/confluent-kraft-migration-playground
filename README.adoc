@@ -3,6 +3,8 @@
 This playground for experimenting with migrating Kafka from Zookeeper to KRaft.
 It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier observability.
 
+DISCLAIMER: This project is for demonstration purposes only. Using the demo unmodified in production is highly discouraged. Use at your own risk.
+
 ## Confluent Platform vs. Apache Kafka
 Please change to one of these two sub folders and continue with the README there:
 

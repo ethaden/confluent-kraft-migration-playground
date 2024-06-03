@@ -5,6 +5,8 @@ It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier obse
 
 This version of the playground is for Confluent Platform (commercial). The guide for migrating Confluent Platform installations from Zookeeper to KRaft can be found link:https://docs.confluent.io/platform/current/installation/migrate-zk-kraft.html#[here].
 
+DISCLAIMER: This project is for demonstration purposes only. Using the demo unmodified in production is highly discouraged. Use at your own risk.
+
 == Preconditions
 
 Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.

@@ -5,6 +5,8 @@ It features an optional ELK (Elastic, Kibana, fleet agent) stack for easier obse
 
 This version of the playground is for the open-source version of Apache Kafka. The guide for migrating Apache Kafka installations from Zookeeper to KRaft can be found link:https://kafka.apache.org/documentation/)#kraft_zk_migration[here].
 
+DISCLAIMER: This project is for demonstration purposes only. Using the demo unmodified in production is highly discouraged. Use at your own risk.
+
 == Preconditions
 
 Adapt the testbench to your version of Confluent Platform as required by modifying `.env`.
